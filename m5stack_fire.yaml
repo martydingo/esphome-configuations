@@ -1,9 +1,34 @@
-esphome:
-  name: esphome-web-5b0874
+external_components:
+  - source:
+      type: git
+      url: https://github.com/ssieb/custom_components
+    components: [ip5306]
+
+substitutions:
+  machine_name: m5stack_fire
   friendly_name: M5Stack Fire
 
+font:
+  - file: "fonts/SourceSans.ttf"
+    id: sans
+    size: 20
+  - file: "fonts/SourceSansItalic.ttf"
+    id: sans_italic
+    size: 20
+  - file: "fonts/SourceSerif.ttf"
+    id: serif
+    size: 20
+  - file: "fonts/SourceSerifItalic.ttf"
+    id: serif_italic
+    size: 20
+
+esphome:
+  name: ${machine_name}
+  # name: ${machine_name}
+  friendly_name: ${friendly_name}
+
 esp32:
-  board: esp32dev
+  board: m5stack-fire
   framework:
     type: arduino
 
@@ -17,16 +42,110 @@ api:
 
 ota:
 
-
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
-    ssid: "M5Stack Fire Fallback Hotspot"
+    ssid: "${friendly_name} Fallback Hotspot"
     password: !secret wifi_password
 
-
 captive_portal:
-    https://github.com/martydingo/esphome-axp192
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: True
+
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
+
+ip5306:
+  battery_level:
+    name: ${friendly_name} Battery Level
+    id: ${machine_name}_battery_level
+  charger_connected:
+    name: ${friendly_name} Charger Connected
+    id: ${machine_name}_charger_connected
+  charge_full:
+    name: ${friendly_name} Charge Full
+    id: ${machine_name}_battery_full
+
+binary_sensor:
+  - platform: gpio
+    id: ${machine_name}_button_a
+    pin:
+      number: 39
+      inverted: true
+      allow_other_uses: true
+  - platform: gpio
+    id: ${machine_name}_button_b
+    pin:
+      number: 38
+      inverted: true
+  - platform: gpio
+    id: ${machine_name}_button_c
+    pin:
+      number: 37
+      inverted: true
+
+output:
+  - platform: ledc # backlight output
+    pin: 32
+    id: ${machine_name}_backlight_pwm
+
+light:
+  - platform: monochromatic # backlight
+    output: ${machine_name}_backlight_pwm
+    name: ${friendly_name} Backlight
+    id: ${machine_name}_backlight
+    restore_mode: ALWAYS_ON
+  - platform: esp32_rmt_led_strip
+    rgb_order: GRB
+    pin: GPIO15
+    num_leds: 10
+    rmt_channel: 1
+    chipset: SK6812
+    name: "${friendly_name} RGB"
+    restore_mode: ALWAYS_OFF
+    id: ${machine_name}_rgb
+    default_transition_length: 0s
+
+deep_sleep:
+  id: ${machine_name}_deep_sleep
+  wakeup_pin:
+    number: 39
+    allow_other_uses: true
+  wakeup_pin_mode: INVERT_WAKEUP
+
+i2s_audio:
+  i2s_lrclk_pin: GPIO13
+
+microphone:
+  - platform: i2s_audio
+    adc_pin: GPIO34
+    adc_type: internal
+    id: ${machine_name}_adc_mic
+
+media_player:
+  - platform: i2s_audio
+    name: "${friendly_name} Internal Media Player"
+    id: ${machine_name}_media_player_out
+    dac_type: internal
+    mode: right
+
+display:
+  - platform: ili9xxx
+    model: M5STACK
+    cs_pin: 14
+    dc_pin: 27
+    reset_pin: 33
+    id: my_display
+    lambda: |-
+      it.print(80, 0, id(sans), Color(255, 255, 255), TextAlign::TOP_CENTER, "M5Stack Fire Test");
+
+web_server:
+  port: 80
