@@ -11,16 +11,22 @@ substitutions:
 font:
   - file: "fonts/SourceSans.ttf"
     id: sans
-    size: 20
+    size: 24
   - file: "fonts/SourceSansItalic.ttf"
     id: sans_italic
-    size: 20
+    size: 24
+  - file: "fonts/SourceSans.ttf"
+    id: sans_title
+    size: 72
+  - file: "fonts/SourceSansItalic.ttf"
+    id: sans_italic_title
+    size: 72
   - file: "fonts/SourceSerif.ttf"
     id: serif
-    size: 20
+    size: 24
   - file: "fonts/SourceSerifItalic.ttf"
     id: serif_italic
-    size: 20
+    size: 24
 
 esphome:
   name: ${machine_name}
@@ -143,9 +149,11 @@ display:
     cs_pin: 14
     dc_pin: 27
     reset_pin: 33
-    id: my_display
-    lambda: |-
-      it.print(80, 0, id(sans), Color(255, 255, 255), TextAlign::TOP_CENTER, "M5Stack Fire Test");
+    id: ${machine_name}_display
+    pages:
+      - id: ${machine_name}_home
+        lambda: |-
+          it.print(0, 0, id(sans_title), Color(255, 255, 255), TextAlign::TOP_CENTER, "Home");
 
 web_server:
   port: 80
