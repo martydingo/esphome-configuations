@@ -1,0 +1,32 @@
+esphome:
+  name: esphome-web-5b0874
+  friendly_name: M5Stack Fire
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "WveAGG75/IcfU1Wx/8GqSrTVPmBvVdLfydfxNId0JGM="
+
+ota:
+
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "M5Stack Fire Fallback Hotspot"
+    password: !secret wifi_password
+
+
+captive_portal:
+    https://github.com/martydingo/esphome-axp192
