@@ -17,10 +17,10 @@ font:
     size: 24
   - file: "fonts/SourceSans.ttf"
     id: sans_title
-    size: 72
+    size: 48
   - file: "fonts/SourceSansItalic.ttf"
     id: sans_italic_title
-    size: 72
+    size: 48
   - file: "fonts/SourceSerif.ttf"
     id: serif
     size: 24
@@ -153,7 +153,7 @@ display:
     pages:
       - id: ${machine_name}_home
         lambda: |-
-          it.print(0, 0, id(sans_title), Color(255, 255, 255), TextAlign::TOP_CENTER, "Home");
+          it.print(160, 0, id(sans_title), Color(255, 255, 255), TextAlign::TOP_CENTER, "Home");
 
 web_server:
   port: 80
